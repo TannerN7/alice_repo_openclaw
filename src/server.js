@@ -28,7 +28,13 @@ for (const suffix of ["PUBLIC_PORT", "STATE_DIR", "WORKSPACE_DIR", "GATEWAY_TOKE
 // boot but the Railway domain will be routed to a different port.
 //
 // OPENCLAW_PUBLIC_PORT is kept as an escape hatch for non-Railway deployments.
-const PORT = Number.parseInt(process.env.PORT ?? process.env.OPENCLAW_PUBLIC_PORT ?? "3000", 10);
+const rawPort = process.env.PORT ?? process.env.OPENCLAW_PUBLIC_PORT ?? "3000";
+const PORT = Number.parseInt(rawPort, 10);
+
+if (!Number.isInteger(PORT) || PORT <= 0 || PORT > 65535) {
+  console.error("Invalid port from environment:", rawPort);
+  process.exit(1);
+}
 
 // State/workspace
 // OpenClaw defaults to ~/.openclaw.
